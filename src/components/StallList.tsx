@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { MapPin, Star, ChevronDown, SlidersHorizontal, RefreshCw, Search } from 'lucide-react';
 import { localStorageService } from '../services/localStorage';
-import Rating from './Rating';
 import type { FoodStall } from '../types/FoodStall';
 
 const StallList: React.FC = () => {
@@ -59,6 +58,83 @@ const StallList: React.FC = () => {
         duration: 0.5
       }
     }
+  };
+
+  const renderContent = () => {
+    if (filteredStalls.length === 0) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="flex flex-col items-center justify-center py-12 px-4 bg-white rounded-xl shadow-sm"
+        >
+          <div className="w-24 h-24 mb-6 bg-primary-100 rounded-full flex items-center justify-center">
+            <Search className="w-12 h-12 text-primary-500" />
+          </div>
+          <h3 className="text-xl font-display font-semibold text-gray-900 mb-2">
+            No Food Stalls Found
+          </h3>
+          <p className="text-gray-600 text-center mb-6 max-w-md">
+            We couldn't find any food stalls matching your criteria. Try adjusting your filters or exploring a different location!
+          </p>
+          <button
+            onClick={resetFilters}
+            className="btn-primary flex items-center space-x-2"
+          >
+            <RefreshCw size={18} />
+            <span>Reset Filters</span>
+          </button>
+        </motion.div>
+      );
+    }
+
+    return (
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+      >
+        {filteredStalls.map((stall) => (
+          <motion.div
+            key={stall.id}
+            variants={itemVariants}
+            className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
+          >
+            <Link to={`/stall/${stall.id}`} className="block">
+              {stall.imageUrl && (
+                <div className="relative h-48 rounded-t-xl overflow-hidden">
+                  <img
+                    src={stall.imageUrl}
+                    alt={stall.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-2">
+                  <h2 className="text-xl font-display font-semibold text-gray-900 line-clamp-1">
+                    {stall.name}
+                  </h2>
+                  <div className="flex items-center">
+                    <Star className="w-5 h-5 text-primary-500 fill-primary-500" />
+                    <span className="ml-1 font-medium text-gray-900">
+                      {stall.rating?.toFixed(1) || 'New'}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-4 line-clamp-2">{stall.description}</p>
+                <div className="flex items-center text-gray-500">
+                  <MapPin size={18} className="mr-1" />
+                  <span className="text-sm">{stall.location}</span>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </motion.div>
+    );
   };
 
   return (
@@ -126,78 +202,7 @@ const StallList: React.FC = () => {
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {filteredStalls.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col items-center justify-center py-12 px-4 bg-white rounded-xl shadow-sm"
-            >
-              <div className="w-24 h-24 mb-6 bg-primary-100 rounded-full flex items-center justify-center">
-                <Search className="w-12 h-12 text-primary-500" />
-              </div>
-              <h3 className="text-xl font-display font-semibold text-gray-900 mb-2">
-                No Food Stalls Found
-              </h3>
-              <p className="text-gray-600 text-center mb-6 max-w-md">
-                We couldn't find any food stalls matching your criteria. Try adjusting your filters or exploring a different location!
-              </p>
-              <button
-                onClick={resetFilters}
-                className="btn-primary flex items-center space-x-2"
-              >
-                <RefreshCw size={18} />
-                <span>Reset Filters</span>
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {filteredStalls.map((stall) => (
-                <motion.div
-                  key={stall.id}
-                  variants={itemVariants}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
-                >
-                  <Link to={`/stall/${stall.id}`} className="block">
-                    {stall.imageUrl && (
-                      <div className="relative h-48 rounded-t-xl overflow-hidden">
-                        <img
-                          src={stall.imageUrl}
-                          alt={stall.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-2">
-                        <h2 className="text-xl font-display font-semibold text-gray-900 line-clamp-1">
-                          {stall.name}
-                        </h2>
-                        <div className="flex items-center">
-                          <Star className="w-5 h-5 text-primary-500 fill-primary-500" />
-                          <span className="ml-1 font-medium text-gray-900">
-                            {stall.rating?.toFixed(1) || 'New'}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-gray-600 mb-4 line-clamp-2">{stall.description}</p>
-                      <div className="flex items-center text-gray-500">
-                        <MapPin size={18} className="mr-1" />
-                        <span className="text-sm">{stall.location}</span>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {renderContent()}
       </div>
     </div>
   );

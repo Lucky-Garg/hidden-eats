@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, DollarSign, Camera, UtensilsCrossed } from 'lucide-react';
-import { localStorageService, currentUser } from '../services/localStorage';
+import { localStorageService } from '../services/localStorage';
 import type { FoodStall } from '../types/FoodStall';
 
 const AddStallForm: React.FC = () => {

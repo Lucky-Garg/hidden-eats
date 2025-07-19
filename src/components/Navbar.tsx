@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, ChevronDown, SlidersHorizontal, User, LogOut, Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ChevronDown, SlidersHorizontal, User, LogOut, Settings } from 'lucide-react';
 import { currentUser } from '../services/localStorage';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const Navbar: React.FC = () => {
             </Link>
 
             {/* User Profile Dropdown */}
-            <DropdownMenu.Root>
+            <DropdownMenu.Root onOpenChange={setIsDropdownOpen}>
               <DropdownMenu.Trigger asChild>
                 <button className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-primary-50 transition-colors duration-200">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-medium shadow-lg">
@@ -76,50 +77,48 @@ const Navbar: React.FC = () => {
                 </button>
               </DropdownMenu.Trigger>
 
-              <AnimatePresence>
-                <DropdownMenu.Portal forceMount>
-                  <DropdownMenu.Content
-                    align="end"
-                    sideOffset={5}
-                    asChild
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="end"
+                  sideOffset={5}
+                  asChild
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="z-50 min-w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 py-2"
                   >
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="z-50 min-w-[200px] bg-white rounded-lg shadow-lg border border-gray-200 py-2"
-                    >
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="font-medium text-gray-900">{currentUser.name}</p>
-                        <p className="text-sm text-gray-500">{currentUser.email}</p>
-                      </div>
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="font-medium text-gray-900">{currentUser.name}</p>
+                      <p className="text-sm text-gray-500">{currentUser.email}</p>
+                    </div>
 
-                      <DropdownMenu.Item className="outline-none">
-                        <button className="w-full flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
-                          <User size={16} />
-                          <span>Profile</span>
-                        </button>
-                      </DropdownMenu.Item>
+                    <DropdownMenu.Item className="outline-none">
+                      <button className="w-full flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
+                        <User size={16} />
+                        <span>Profile</span>
+                      </button>
+                    </DropdownMenu.Item>
 
-                      <DropdownMenu.Item className="outline-none">
-                        <button className="w-full flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
-                          <Settings size={16} />
-                          <span>Settings</span>
-                        </button>
-                      </DropdownMenu.Item>
+                    <DropdownMenu.Item className="outline-none">
+                      <button className="w-full flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
+                        <Settings size={16} />
+                        <span>Settings</span>
+                      </button>
+                    </DropdownMenu.Item>
 
-                      <DropdownMenu.Separator className="h-px bg-gray-200 my-1" />
+                    <DropdownMenu.Separator className="h-px bg-gray-200 my-1" />
 
-                      <DropdownMenu.Item className="outline-none">
-                        <button className="w-full flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
-                          <LogOut size={16} />
-                          <span>Sign Out</span>
-                        </button>
-                      </DropdownMenu.Item>
-                    </motion.div>
-                  </DropdownMenu.Content>
-                </DropdownMenu.Portal>
-              </AnimatePresence>
+                    <DropdownMenu.Item className="outline-none">
+                      <button className="w-full flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+                        <LogOut size={16} />
+                        <span>Sign Out</span>
+                      </button>
+                    </DropdownMenu.Item>
+                  </motion.div>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
             </DropdownMenu.Root>
           </div>
 
@@ -157,92 +156,87 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden"
-            id="mobile-menu"
+      <motion.div
+        initial={false}
+        animate={isMenuOpen ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+        className="md:hidden overflow-hidden"
+        id="mobile-menu"
+      >
+        <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg rounded-b-xl">
+          <Link
+            to="/"
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+              isActive('/') 
+                ? 'text-primary-500 bg-primary-50' 
+                : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50'
+            }`}
+            onClick={() => setIsMenuOpen(false)}
           >
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg rounded-b-xl">
-              <Link
-                to="/"
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                  isActive('/') 
-                    ? 'text-primary-500 bg-primary-50' 
-                    : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                to="/search"
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                  isActive('/search')
-                    ? 'text-primary-500 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Find Stalls
-              </Link>
-              <Link
-                to="/add-stall"
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                  isActive('/add-stall')
-                    ? 'text-primary-500 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Add Stall
-              </Link>
-              <Link
-                to="/my-reviews"
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                  isActive('/my-reviews')
-                    ? 'text-primary-500 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                My Reviews
-              </Link>
+            Home
+          </Link>
+          <Link
+            to="/search"
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+              isActive('/search')
+                ? 'text-primary-500 bg-primary-50'
+                : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50'
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Find Stalls
+          </Link>
+          <Link
+            to="/add-stall"
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+              isActive('/add-stall')
+                ? 'text-primary-500 bg-primary-50'
+                : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50'
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Add Stall
+          </Link>
+          <Link
+            to="/my-reviews"
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+              isActive('/my-reviews')
+                ? 'text-primary-500 bg-primary-50'
+                : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50'
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            My Reviews
+          </Link>
 
-              {/* Mobile Profile */}
-              <div className="px-3 py-3 mt-2 border-t border-gray-200">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-medium shadow-lg">
-                    {currentUser.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{currentUser.name}</p>
-                    <p className="text-sm text-gray-500">{currentUser.email}</p>
-                  </div>
-                </div>
-
-                <div className="mt-3 space-y-1">
-                  <button className="w-full flex items-center space-x-2 px-3 py-2 text-gray-700 rounded-md hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
-                    <User size={16} />
-                    <span>Profile</span>
-                  </button>
-                  <button className="w-full flex items-center space-x-2 px-3 py-2 text-gray-700 rounded-md hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
-                    <Settings size={16} />
-                    <span>Settings</span>
-                  </button>
-                  <button className="w-full flex items-center space-x-2 px-3 py-2 text-red-600 rounded-md hover:bg-red-50 transition-colors duration-200">
-                    <LogOut size={16} />
-                    <span>Sign Out</span>
-                  </button>
-                </div>
+          {/* Mobile Profile */}
+          <div className="px-3 py-3 mt-2 border-t border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-medium shadow-lg">
+                {currentUser.name.charAt(0)}
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">{currentUser.name}</p>
+                <p className="text-sm text-gray-500">{currentUser.email}</p>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            <div className="mt-3 space-y-1">
+              <button className="w-full flex items-center space-x-2 px-3 py-2 text-gray-700 rounded-md hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
+                <User size={16} />
+                <span>Profile</span>
+              </button>
+              <button className="w-full flex items-center space-x-2 px-3 py-2 text-gray-700 rounded-md hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
+                <Settings size={16} />
+                <span>Settings</span>
+              </button>
+              <button className="w-full flex items-center space-x-2 px-3 py-2 text-red-600 rounded-md hover:bg-red-50 transition-colors duration-200">
+                <LogOut size={16} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
     </nav>
   );
 };
