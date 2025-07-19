@@ -1,25 +1,29 @@
 import React from 'react';
-import logo from './logo.svg';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import LandingPage from './components/LandingPage';
+import AddStallForm from './components/AddStallForm';
+import StallDetail from './components/StallDetail';
+import StallList from './components/StallList';
+import MyReviews from './components/MyReviews';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-peach-100">
+        <Navbar />
+        <main className="pt-16">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/add-stall" element={<AddStallForm />} />
+            <Route path="/stall/:id" element={<StallDetail />} />
+            <Route path="/my-reviews" element={<MyReviews />} />
+            <Route path="/search" element={<StallList />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 

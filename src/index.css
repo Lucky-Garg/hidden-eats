@@ -1,13 +1,50 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-primary-50 to-peach-100 min-h-screen;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 text-white px-6 py-3 rounded-lg font-medium
+    hover:bg-primary-600 hover:shadow-glow transform hover:scale-105
+    transition-all duration-200 ease-in-out focus:outline-none focus:ring-2
+    focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-primary-500 px-6 py-3 rounded-lg font-medium
+    hover:bg-primary-50 hover:text-primary-600 transform hover:scale-105
+    transition-all duration-200 ease-in-out border border-primary-500
+    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-lg p-6 hover:shadow-xl
+    transition-shadow duration-200 ease-in-out animate-fade-in;
+  }
+
+  .nav-link {
+    @apply text-gray-700 hover:text-primary-500 px-3 py-2 rounded-md text-sm font-medium
+    transition-colors duration-200 ease-in-out relative after:absolute after:bottom-0
+    after:left-0 after:w-full after:h-0.5 after:bg-primary-500 after:scale-x-0
+    hover:after:scale-x-100 after:transition-transform after:duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-primary-500 after:scale-x-100;
+  }
 }
